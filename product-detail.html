@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Описание товара</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+        }
+    }
+    </script>
+</head>
+<body style="display: none;">
+    <div id="app">
+        <header>
+            <div class="header-emoji">💨</div>
+            <h1>Вейп Шоп</h1>
+        </header>
+        
+        <div class="product-detail-page">
+            <div class="product-detail-container">
+                <div class="product-gallery">
+                    <div class="product-image-large">
+                        <img v-if="product.image" 
+                             :src="product.image" 
+                             :alt="product.name">
+                        <div v-else class="placeholder-image">
+                            {{ product.emoji || '📦' }}
+                        </div>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h2>{{ product.name }}</h2>
+                    <div class="product-meta">
+                        <div class="product-brand">Бренд: {{ product.details.brand }}</div>
+                        <div class="product-availability">
+                            <span class="in-stock">✓ В наличии</span>
+                        </div>
+                    </div>
+                    <div class="product-price">{{ product.price }}₽</div>
+                    
+                    <div class="product-description">
+                        <p>{{ product.details.additionalDescription }}</p>
+                    </div>
+                    
+                    <div class="product-specs">
+                        <div class="spec-row">
+                            <div class="spec-name">Крепость</div>
+                            <div class="spec-value">{{ product.details.strength }}</div>
+                        </div>
+                        <div class="spec-row">
+                            <div class="spec-name">Вкус</div>
+                            <div class="spec-value">{{ product.details.flavor }}</div>
+                        </div>
+                        <div class="spec-row">
+                            <div class="spec-name">Объем</div>
+                            <div class="spec-value">{{ product.details.volume }}</div>
+                        </div>
+                        <div class="spec-row">
+                            <div class="spec-name">Емкость</div>
+                            <div class="spec-value">{{ product.details.capacity }}</div>
+                        </div>
+                        <div v-for="spec in product.specs" :key="spec.name" class="spec-row">
+                            <div class="spec-name">{{ spec.name }}</div>
+                            <div class="spec-value">{{ spec.value }}</div>
+                        </div>
+                    </div>
+
+                    <div class="product-quantity">
+                        <button @click="decreaseQuantity">-</button>
+                        <input type="number" v-model="quantity" min="1">
+                        <button @click="increaseQuantity">+</button>
+                    </div>
+
+                    <div class="product-actions">
+                        <button class="add-to-cart" @click="addToCart">В корзину</button>
+                        <button class="buy-now" @click="buyNow">Купить сейчас</button>
+                    </div>
+
+                    <div class="social-share">
+                        <span>Поделиться:</span>
+                        <div class="share-buttons">
+                            <!-- Social share buttons -->
+                            <button v-for="platform in ['fb', 'vk', 'tg']" 
+                                    :key="platform" 
+                                    class="share-btn">
+                                {{ platform }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { createApp } from 'vue';
+
+        createApp({
+            data() {
+                return {
+                    product: {
+                        name: '',
+                        price: 0,
+                        details: {
+                            brand: '',
+                            strength: '',
+                            flavor: '',
+                            volume: '',
+                            capacity: ''
+                        },
+                        specs: [],
+                        image: '',
+                        emoji: ''
+                    },
+                    quantity: 1
+                };
+            },
+            methods: {
+                increaseQuantity() {
+                    this.quantity++;
+                },
+                decreaseQuantity() {
+                    if (this.quantity > 1) this.quantity--;
+                },
+                addToCart() {
+                    // Add to cart logic
+                },
+                buyNow() {
+                    // Buy now logic
+                }
+            },
+            mounted() {
+                // Load product data
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('id');
+                
+                // Get product from localStorage
+                const products = JSON.parse(localStorage.getItem('products') || '[]');
+                const product = products.find(p => p.id.toString() === productId);
+                
+                if (product) {
+                    this.product = product;
+                }
+                
+                document.body.style.display = '';
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
